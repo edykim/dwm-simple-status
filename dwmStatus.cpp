@@ -76,8 +76,13 @@ void setText(string text) {
 
 int main() {
   string separator = SEPARATOR;
+  string cache = "";
   while(true) {
-    setText(battery() + separator + datetime());
+    string text = battery() + separator + datetime();
+    if (cache != text) {
+      setText(text);
+      cache = text;
+    }
     this_thread::sleep_for(chrono::milliseconds(1000));
   }
   return 0;
