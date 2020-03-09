@@ -31,6 +31,13 @@
 
 using namespace std;
 
+string datetime();
+string battery();
+
+using fn = string();
+static const fn * arr[] = { battery, datetime };
+
+
 string datetime() {
   ostringstream os;
   time_t t = time(nullptr);
@@ -77,8 +84,16 @@ void setText(string text) {
 int main() {
   string separator = SEPARATOR;
   string cache = "";
+
   while(true) {
-    string text = battery() + separator + datetime();
+    string text = "";
+    for (fn *func : arr) {
+      if (text != "") {
+        text += separator;
+      }
+      text += func();
+    }
+
     if (cache != text) {
       setText(text);
       cache = text;
@@ -87,3 +102,4 @@ int main() {
   }
   return 0;
 }
+
