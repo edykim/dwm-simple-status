@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <ctime>
 #include <string>
@@ -33,9 +34,10 @@ using namespace std;
 
 string datetime();
 string battery();
+string brightness();
 
 using fn = string();
-static const fn * arr[] = { battery, datetime };
+static const fn * arr[] = { brightness, battery, datetime };
 
 
 string datetime() {
@@ -44,6 +46,25 @@ string datetime() {
   struct tm* timeinfo = localtime(&t);
   os << std::put_time(timeinfo, DATETIME_FORMAT);
   return os.str();
+}
+
+string brightness() {
+  ifstream brightnessFile, maxBrightnessFile;
+  string current, max;
+  string output;
+
+  brightnessFile.open("/sys/class/backlight/intel_backlight/brightness");
+  if (brightnessFile.is_open()) {
+    getline(brightnessFile, current);
+    brightnessFile.close();
+  }
+  maxBrightnessFile.open("/sys/class/backlight/intel_backlight/max_brightness");
+  if (maxBrightnessFile.is_open()) {
+    getline(maxBrightnessFile, max);
+    maxBrightnessFile.close();
+  }
+  output = current + "/" + max;
+  return output;
 }
 
 string battery() {
