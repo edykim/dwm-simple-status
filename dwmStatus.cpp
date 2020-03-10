@@ -108,11 +108,13 @@ int main() {
 
   while(true) {
     string text = "";
+    string result = "";
     for (fn *func : arr) {
       if (text != "") {
         text += separator;
       }
-      text += func();
+      result = func();
+      text += result == "" ? "-" : result;
     }
 
     if (cache != text) {
