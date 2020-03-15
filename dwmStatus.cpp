@@ -61,7 +61,7 @@ string command(string cmd) {
 }
 
 string volume() {
-  string result = command("amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '\n'");
+  string result = command("amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 \" \" $4 }' | tr -d '\n'");
   return "Vol " + result;
 }
 
