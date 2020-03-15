@@ -25,6 +25,8 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <cstdio>
+#include <cstdlib>
 #include <X11/Xlib.h>
 
 #define SEPARATOR " | "
@@ -35,10 +37,33 @@ using namespace std;
 string datetime();
 string battery();
 string brightness();
+string volume();
 
 using fn = string();
-static const fn * arr[] = { brightness, battery, datetime };
+static const fn * arr[] = { volume, brightness, battery, datetime };
 
+string command(string cmd) {
+  string data;
+  FILE * stream;
+  const int max_buffer = 256;
+  char buffer[max_buffer];
+  cmd.append(" 2>&1");
+  stream = popen(cmd.c_str(), "r");
+  if (stream) {
+    while (!feof(stream)) {
+      if (fgets(buffer, max_buffer, stream) != NULL) {
+        data.append(buffer);
+      }
+    }
+    pclose(stream);
+  }
+  return data;
+}
+
+string volume() {
+  string result = command("amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '\n'");
+  return "Vol " + result;
+}
 
 string datetime() {
   ostringstream os;
@@ -64,7 +89,7 @@ string brightness() {
     maxBrightnessFile.close();
   }
   output = current + "/" + max;
-  return output;
+  return "Bri " + output;
 }
 
 string battery() {
@@ -88,7 +113,7 @@ string battery() {
     output += " (" + status +")";
   }
 
-  return output;
+  return "P " + output;
 }
 
 void setText(string text) {
